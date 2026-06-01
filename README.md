@@ -1,10 +1,19 @@
 # Footstats-Scraper
 
+Manage Football Stats from the your own Terminal CLI.  
+
+---
+
+## Web Scraping Sources 
+
+| Markdown    | Source              | What to expect | 
+|--------|----------------------|--------|
+| [Transfermarkt](transfermarkt.md) | [Link to Website](https://www.transfermarkt.com/) |Player Market Value, Transfers, Matches Played, Penalties, etc | 
+
 ## Package Management
 This project uses [UV](https://github.com/astral-sh/uv) as the Python package manager and environment manager. UV is a fast, modern alternative to pip and virtualenv.
 
-### UV Environments
-The `root` directory is configured as a UV project with its own virtual environment and dependencies.
+**UV Environments:** The `root` directory is configured as a UV project with its own virtual environment and dependencies.
 
 #### UV Installation Steps
 ```bash
@@ -20,7 +29,9 @@ uv sync
 uv sync --all-extras
 ```
 
-#### VSCode Setup
+#### Activate the Virtual Environment
+
+**Using VSCODE Command Pallete**
 ```bash
 # Get Python interpreter path for VSCode
 uv run which python
@@ -32,11 +43,14 @@ uv run which python
 # 4. Create a new terminal (Cmd+Shift+P -> "Create New Terminal with Profile")
 ```
 
-### Run main.py
+**In terminal**
+Activate the new virtual environment so that any Python command you run or package you install uses it.
 
-Run with python:
-```python -m src.cli.main```
+```bash 
+source .venv/bin/activate
+```
 
-Run with uv:
-```uv run python -m src.cli.main```
+Every time you install a new package in that environment, activate the environment again.
+
+This makes sure that if you use a terminal (CLI) program installed by that package, you use the one from your virtual environment and not any other that could be installed globally, probably with a different version than what you need.
 

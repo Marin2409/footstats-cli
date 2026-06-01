@@ -7,3 +7,9 @@ headers = {
 
 # Regular expression pattern to extract player ID from URL
 pattern = r"/profil/spieler/(\d+)"
+
+# Base URL for Transfermarkt 
+base_url = "https://www.transfermarkt.com"
+
+# Search Player profile URL
+search_url_template = f"{base_url}/schnellsuche/ergebnis/schnellsuche?query={{name}}"

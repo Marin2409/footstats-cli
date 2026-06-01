@@ -1,26 +1,10 @@
 import re
-import requests
-import time
 
-from bs4 import BeautifulSoup
-from src.config import pattern as player_id_pattern
-from src.config import headers as request_headers
+from src.utils.config import pattern as player_id_pattern
+from src.utils.config import search_url_template
+from src.utils.config import base_url
 from src.models.player_db import Player
-
-# Request to Transfermarkt and test connections
-def transfermarkt_request_to_soup(url):
-        time.sleep(3)
-        response = requests.get(
-            url,
-            headers=request_headers
-        )
-
-        print("\nStatus:", response.status_code)
-        print("URL:", response.url, "\n")
-
-        soup = BeautifulSoup(response.content, 'html.parser')
-
-        return soup
+from src.utils.request_to_soup import transfermarkt_request_to_soup
 
 # Extract player ID from URL
 def get_player_id(player_url):
@@ -38,10 +22,7 @@ def get_player_id(player_url):
 
 # Get search results for a player name
 def get_search_results(name):
-    search_url = (
-        f"https://www.transfermarkt.com/"
-        f"schnellsuche/ergebnis/schnellsuche?query={name}"
-    )
+    search_url = search_url_template.format(name=name)
 
     soup = transfermarkt_request_to_soup(search_url)
 
@@ -58,7 +39,7 @@ def get_search_results(name):
         if not player_name:
             continue
 
-        full_url = f"https://www.transfermarkt.com{href}"
+        full_url = f"{base_url}{href}"
 
         players.append(
             Player(
