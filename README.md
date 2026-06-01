@@ -32,3 +32,11 @@ uv run which python
 # 4. Create a new terminal (Cmd+Shift+P -> "Create New Terminal with Profile")
 ```
 
+### Run main.py
+
+Run with python:
+```python -m src.cli.main```
+
+Run with uv:
+```uv run python -m src.cli.main```
+
