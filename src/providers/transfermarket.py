@@ -79,21 +79,22 @@ def get_player_profile(player_url: str) -> Player:
         class_="data-header__headline-wrapper"
     )
 
+    name = "Unknown Player"
+
     # Extract player name if name tag is found
-    name = (
-        name_tag.get_text(strip=True)
+    if name_tag:
 
-        # Fallback to "Unknown" if name is not found
-        if name_tag
-        else "Unknown"
-    )
+        # Extract first and last names separately
+        full_name = name_tag.text.strip()
+        parts = full_name.split(' ', 1)  # Split at the first space character
+        if len(parts) == 2:  # If there's only one space, it means we have a first and last name
+            first_name = parts[0].lower()
+            last_name = parts[1].lower()
+            name = f"{first_name} {last_name}"
 
-    # Clean up player name by removing leading numbers and whitespace
-    name = re.sub(
-        r"^#\d+\s*",
-        "",
-        name
-    )
+            # Removes any leading # and digits from the name (e.g., "#10lionelmessi" -> "Lionel Messi")
+            name = re.sub(r'^#\d+\s*', '', name)
+            name = name.title()
 
     # Extract market value --------------------------------------------
     market_value = None
@@ -308,6 +309,11 @@ def get_player_transfer_history(player_url: str) -> list[Transfer]:
 
     return transfers
 
+# Get Player stats
+def get_player_stats(player_url: str) -> dict:
+    # This function can be implemented similarly to the profile and transfer history functions
+    # by constructing the appropriate URL, making a request, and parsing the response.
+    return {None: None}
 
 
 
