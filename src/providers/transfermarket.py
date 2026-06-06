@@ -1,9 +1,20 @@
+# Package Imports
 import re
+import requests
 
+# Config
 from src.utils.config import pattern as player_id_pattern
+from src.utils.config import birthday_pattern
 from src.utils.config import search_url_template
+from src.utils.config import transfer_history_url_template
 from src.utils.config import base_url
-from src.models.player_db import Player
+from src.utils.config import headers as request_headers
+
+# Database Models
+from src.models.player_profile_db import Player
+from src.models.player_transfer_history_db import Transfer
+
+# Utils
 from src.utils.request_to_soup import transfermarkt_request_to_soup
 
 # Extract player ID from URL
@@ -45,8 +56,273 @@ def get_search_results(name):
             Player(
                 id=get_player_id(full_url),
                 name=player_name,
-                url=full_url
+                url=full_url,
+                
+
             )
         )
 
     return players
+
+# Get Player Profile
+def get_player_profile(player_url: str) -> Player:
+
+    # Make Request and parse with BeautifulSoup
+    soup = transfermarkt_request_to_soup(player_url)
+
+    # Extract player ID from URL -------------------------------------
+    player_id = get_player_id(player_url)
+
+    # Extract player name --------------------------------------------
+    name_tag = soup.find(
+        "h1", 
+        class_="data-header__headline-wrapper"
+    )
+
+    # Extract player name if name tag is found
+    name = (
+        name_tag.get_text(strip=True)
+
+        # Fallback to "Unknown" if name is not found
+        if name_tag
+        else "Unknown"
+    )
+
+    # Clean up player name by removing leading numbers and whitespace
+    name = re.sub(
+        r"^#\d+\s*",
+        "",
+        name
+    )
+
+    # Extract market value --------------------------------------------
+    market_value = None
+
+    # Extract market value from market value tag
+    value_tag = soup.find(
+        "a",
+        class_="data-header__market-value-wrapper"
+    )
+
+    # Extract market value if the tag is found
+    if value_tag:
+        market_value = "".join(
+            value_tag.get_text(
+                separator=" ",
+                strip=True
+            )
+            .split("Last")[0]
+            .split()
+        )
+
+    # Extract Age value -----------------------------------------------
+    age = None
+
+    # Extract birth date from birth tag
+    birth_tag = soup.find(
+        "span",
+        itemprop="birthDate"
+    )
+    # Extract age if birth tag is found
+    if birth_tag:
+
+        # Extract birth text and clean it up
+        birth_text = birth_tag.get_text(
+        " ",
+        strip=True
+        )
+
+        # Use regex to extract age from birth text
+        match = re.search(
+            birthday_pattern,
+            birth_text
+        )
+
+        # Extract age if regex match is found
+        if match:
+            age = int(match.group(1))
+
+    # Extract birthday value ----------------------------------------------
+    birthday = None
+
+    if birth_tag:
+        birth_text = birth_tag.get_text(
+            " ",
+            strip=True
+        )
+
+        birthday = birth_text.split("(")[0].strip()
+
+    # Extract Club value ----------------------------------------------
+    club = None
+
+    # Extract club from club tag
+    club_tag = soup.find(
+        "span",
+        class_="data-header__club"
+    )
+
+    # Extract club if club tag is found
+    if club_tag:
+        club = club_tag.get_text(strip=True)
+
+    # Extract position value ------------------------------------------
+    position = None
+
+    # Extract position from position tag
+    position_tag = soup.find(
+        "dd",
+        class_="detail-position__position"
+    )
+
+    # Extract position if position tag is found
+    if position_tag:
+        position = position_tag.get_text(strip=True)
+
+    # Extract Other Positions value -------------------------------------------
+    other_positions = None
+
+    # Find the "Other position:" title, then grab all sibling <dd> tags
+    other_position_tag = soup.find(
+        "dt",
+        class_="detail-position__title",
+        string=lambda t: t and "Other position:" in t  # type: ignore[call-overload]
+    )
+
+    if other_position_tag:
+        parent_dl = other_position_tag.find_parent("dl")
+        if parent_dl:
+            other_position_tags = parent_dl.find_all(
+                "dd",
+                class_="detail-position__position"
+            )
+            if other_position_tags:
+                other_positions = [
+                    dd.get_text(strip=True)
+                    for dd in other_position_tags
+                ]
+
+
+    # Extract height value ----------------------------------------------------
+    height = None
+
+    # Extract height from height tag
+    height_tag = soup.find(
+        "span",
+        itemprop="height"
+    )
+
+    # Extract height if height tag is found
+    if height_tag:
+        height = height_tag.get_text(strip=True)
+
+    # Extract Place of Birth value --------------------------------------------
+    place_of_birth = None
+
+    # Extract place of birth from place of birth tag
+    place_of_birth_tag = soup.find(
+        "span",
+        itemprop="birthPlace"
+    )
+
+    # Extract place of birth if tag is found
+    if place_of_birth_tag:
+        place_of_birth = place_of_birth_tag.get_text(strip=True)
+
+    # Extract Citizenship value --------------------------------------------
+    citizenship = None
+
+    citizenship_label = soup.find(  
+        "span",
+        class_="info-table__content info-table__content--regular",
+        string=lambda t: t and "Citizenship:" in t  # type: ignore[call-overload]
+    )
+
+    if citizenship_label:
+        citizenship_sibling = citizenship_label.find_next_sibling(
+            "span",
+            class_="info-table__content info-table__content--bold"
+        )
+        if citizenship_sibling:
+            citizenship = citizenship_sibling.get_text(strip=True)
+
+    # Extract Foot value --------------------------------------------
+    foot = None
+
+    foot_label = soup.find(  
+        "span",
+        class_="info-table__content info-table__content--regular",
+        string=lambda t: t and "Foot:" in t  # type: ignore[call-overload]     
+    )
+
+    if foot_label:
+        foot_sibling = foot_label.find_next_sibling(
+            "span",
+            class_="info-table__content info-table__content--bold"
+        )
+        if foot_sibling:
+            foot = foot_sibling.get_text(strip=True)
+
+    # Create and return Player object ---------------------------------
+    return Player(
+        id=player_id,
+        name=name,
+        url=player_url,
+        market_value=market_value,
+        age=age,
+        birthday=birthday,
+        club=club,
+        position=position,
+        other_positions=other_positions,
+        height=height,
+        place_of_birth=place_of_birth,
+        citizenship=citizenship,
+        foot=foot,
+    )
+
+# Get Player transfer history
+def get_player_transfer_history(player_url: str) -> list[Transfer]:
+
+    player_id = get_player_id(player_url)
+
+    api_url = transfer_history_url_template.format(player_id=player_id)
+
+    # Use requests directly — this is a JSON API, not an HTML page
+    response = requests.get(api_url, headers=request_headers)
+
+    if response.status_code != 200:
+        raise Exception(f"Request to {api_url} failed with status {response.status_code}")
+
+    data = response.json()
+
+    transfers = []
+    for item in data.get("transfers", []):
+        transfers.append(Transfer(
+            season=item.get("season"),
+            date=item.get("date"),
+            left=item.get("from", {}).get("clubName"),
+            joined=item.get("to", {}).get("clubName"),
+            mv=item.get("marketValue"),
+            fee=item.get("fee"),
+        ))
+
+    return transfers
+
+
+
+
+# Test player profile
+# player = get_player_profile(
+#     # "https://www.transfermarkt.com/cristiano-ronaldo/profil/spieler/8198",
+#     "https://www.transfermarkt.com/lionel-messi/profil/spieler/28003"
+# )
+
+# print(player)
+
+# Test transfer history
+# player_history = get_player_transfer_history(
+#     "https://www.transfermarkt.com/cristiano-ronaldo/profil/spieler/8198"
+# )
+
+# print(player_history)
+

@@ -8,7 +8,7 @@ Manage Football Stats from the your own Terminal CLI.
 
 | Markdown    | Source              | What to expect | 
 |--------|----------------------|--------|
-| [Transfermarkt](transfermarkt.md) | [Link to Website](https://www.transfermarkt.com/) |Player Market Value, Transfers, Matches Played, Penalties, etc | 
+| [Transfermarkt](/docs/transfermarkt.md) | [Link to Website](https://www.transfermarkt.com/) |Player Market Value, Transfers, Matches Played, Penalties, etc | 
 
 ## Package Management
 This project uses [UV](https://github.com/astral-sh/uv) as the Python package manager and environment manager. UV is a fast, modern alternative to pip and virtualenv.

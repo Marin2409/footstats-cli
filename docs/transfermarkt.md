@@ -1,13 +1,20 @@
 # Transfermarket Documentation
 
-## Run main.py
+## Run any file with:
 
-Run with python:
+**Python:**
 ```python
 python -m src.cli.main
 ```
 
-Run with uv:
+**UV:**
 ```bash
 uv run python -m src.cli.main
 ```
+
+Notice how:
+
+| "scr"    | "cli"              | "main" | 
+|--------|----------------------|--------|
+| Root | Parent Folder | File you wanna run | 
+
