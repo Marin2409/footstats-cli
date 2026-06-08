@@ -58,14 +58,8 @@ This makes sure that if you use a terminal (CLI) program installed by that packa
 # Footstats CLI
 
 > Football player stats, transfers, and market values — straight from your terminal.
-
-<!-- ![Python](https://img.shields.io/badge/python-3.13+-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![UV](https://img.shields.io/badge/package%20manager-uv-purple) -->
-
-[![License: MIT](https://img.shields.io/github/license/yourusername/footstats-scraper)](LICENSE)
+[![License: MIT](https://img.shields.io/github/license/Marin2409/footstats-scraper)](LICENSE)
 ![UV](https://img.shields.io/badge/package%20manager-uv-purple?style=flat)
-<!-- ![Python](https://img.shields.io/badge/python-%3E%3D3.13-blue?style=flat) -->
 ---
 
 ## Overview
