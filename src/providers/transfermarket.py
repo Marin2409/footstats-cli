@@ -1,21 +1,34 @@
 # Package Imports
 import re
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Config
 from src.utils.config import pattern as player_id_pattern
 from src.utils.config import birthday_pattern
 from src.utils.config import search_url_template
 from src.utils.config import transfer_history_url_template
+from src.utils.config import player_stats_url_template
 from src.utils.config import base_url
-from src.utils.config import headers as request_headers
 
 # Database Models
 from src.models.player_profile_db import Player
 from src.models.player_transfer_history_db import Transfer
+from src.models.player_stats_db import StatRow
 
 # Utils
 from src.utils.request_to_soup import transfermarkt_request_to_soup
+from src.utils.parse import parse_citizenship
+
+# Headers 
+request_headers = {
+    "User-Agent":      os.getenv("USER_AGENT", "Mozilla/5.0"),
+    "Accept-Language": os.getenv("ACCEPT_LANGUAGE", "en-US,en;q=0.5"),
+    "Accept-Encoding": os.getenv("ACCEPT_ENCODING", "gzip, deflate"),
+}
 
 # Extract player ID from URL
 def get_player_id(player_url):
@@ -57,8 +70,6 @@ def get_search_results(name):
                 id=get_player_id(full_url),
                 name=player_name,
                 url=full_url,
-                
-
             )
         )
 
@@ -244,8 +255,7 @@ def get_player_profile(player_url: str) -> Player:
             "span",
             class_="info-table__content info-table__content--bold"
         )
-        if citizenship_sibling:
-            citizenship = citizenship_sibling.get_text(strip=True)
+        citizenship = parse_citizenship(citizenship_sibling)
 
     # Extract Foot value --------------------------------------------
     foot = None
@@ -310,25 +320,52 @@ def get_player_transfer_history(player_url: str) -> list[Transfer]:
     return transfers
 
 # Get Player stats
-def get_player_stats(player_url: str) -> dict:
-    # This function can be implemented similarly to the profile and transfer history functions
-    # by constructing the appropriate URL, making a request, and parsing the response.
-    return {None: None}
+def get_player_stats(player_url: str) -> list[StatRow]:
 
+    player_id = get_player_id(player_url)
 
+    api_url = player_stats_url_template.format(player_id=player_id)
 
-# Test player profile
-# player = get_player_profile(
-#     # "https://www.transfermarkt.com/cristiano-ronaldo/profil/spieler/8198",
-#     "https://www.transfermarkt.com/lionel-messi/profil/spieler/28003"
-# )
+    response = requests.get(api_url, headers=request_headers)
 
-# print(player)
+    if response.status_code != 200:
+        raise Exception(f"Request failed with status {response.status_code}")
 
-# Test transfer history
-# player_history = get_player_transfer_history(
-#     "https://www.transfermarkt.com/cristiano-ronaldo/profil/spieler/8198"
-# )
+    data = response.json()
+    performance = data.get("data", {}).get("performance", [])
 
-# print(player_history)
+    stat_rows = []
+    for item in performance:
+        game_info = item.get("gameInformation", {})
+        stats = item.get("statistics", {})
+        general = stats.get("generalStatistics", {})
+        goals = stats.get("goalStatistics", {})
+        cards = stats.get("cardStatistics", {})
+        time = stats.get("playingTimeStatistics", {})
+        duels = stats.get("duelStatistics", {})
+        dist = stats.get("distributionStatistics", {})
+
+        stat_rows.append(StatRow(
+            game_id=game_info.get("gameId"),
+            season=game_info.get("season", {}).get("nonCyclicalName"),
+            competition_id=game_info.get("competitionId"),
+            date=game_info.get("date", {}).get("dateTimeUTC"),
+            participation=general.get("participationState"),
+            minutes_played=time.get("playedMinutes"),
+            goals=goals.get("goalsScoredTotal"),
+            assists=goals.get("assists"),
+            yellow_cards=cards.get("yellowCardNet"),
+            red_cards=cards.get("fairPlayPoints"),
+            shots=goals.get("scoringAttempts"),
+            shots_on_goal=goals.get("scoringAttemptsOnGoal"),
+            passes=dist.get("passes"),
+            passes_completed=dist.get("passesReached"),
+            tackles=duels.get("tackles"),
+            fouls_committed=duels.get("foulsCommitted"),
+            fouls_gained=duels.get("foulsGained"),
+            is_starting=time.get("isStarting"),
+            is_captain=general.get("isCaptain"),
+        ))
+
+    return stat_rows
 

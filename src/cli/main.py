@@ -1,73 +1,113 @@
 import typer
+import readchar
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
 
-# Import functions from the transfermarket provider
+
 from src.providers.transfermarket import (
     get_player_transfer_history,
-    get_search_results,
-    get_player_profile
+    get_player_profile,
+    get_player_stats,
 )
 
-# Init Typer
-app = typer.Typer()
+from src.cli.utils.utils import (
+    display_player_profile, 
+    display_transfer_history,
+    display_stats,
+    select_player,
+    version_callback
+)
 
-# CLI command to get player profile
+app = typer.Typer(rich_markup_mode="rich")
+console = Console()
+
 @app.command()
 def player(name: str):
-    players = get_search_results(name)
-
-    if not players:
-        print("No players found")
+    """Search for player and display player profile"""
+    selected = select_player(name)
+    if not selected:
         return
-    
-    for i, player in enumerate(
-        players,
-        start=1
-    ):
-        print(
-            f"{i}. {player.name}"
-        )
+    try:
+        profile = get_player_profile(selected.url)
+        display_player_profile(profile)
+    except Exception as e:
+        console.print(f"[bold red]Failed to fetch profile: {e}[/bold red]")
 
-    
-    choice = typer.prompt(
-        "\nSelect player",
-        type=int
-    )
-
-    selected = players[choice - 1]
-
-    player_profile = get_player_profile(selected.url)
-
-    print(f"Player profile: {player_profile}")
-
-# CLI command to get player transfer history
 @app.command()
 def transfer_history(name: str):
-    players = get_search_results(name)
-
-    if not players:
-        print("No players found")
+    """Gets Player's Transfer History"""
+    selected = select_player(name)
+    if not selected:
         return
-    
-    for i, player in enumerate(
-        players,
-        start=1
-    ):
-        print(
-            f"{i}. {player.name}"
-        )
+    try:
+        transfers = get_player_transfer_history(selected.url)
+        if not transfers:
+            console.print("[yellow]No transfer history found.[/yellow]")
+            return
+        display_transfer_history(transfers)
+    except Exception as e:
+        console.print(f"[bold red]Failed to fetch transfer history: {e}[/bold red]")
 
-    
-    choice = typer.prompt(
-        "\nSelect player",
-        type=int
+@app.command()
+def stats(name: str):
+    """Get Player Stats"""
+    selected = select_player(name)
+    if not selected:
+        return
+    try:
+        stat_rows = get_player_stats(selected.url)
+        if not stat_rows:
+            console.print("[yellow]No stats found.[/yellow]")
+            return
+        display_stats(stat_rows)
+    except Exception as e:
+        console.print(f"[bold red]Failed to fetch stats: {e}[/bold red]")
+
+@app.callback(invoke_without_command=True)
+def main(
+    ctx: typer.Context, 
+    version: bool = typer.Option(None, "--version", "-v", callback=version_callback, is_eager=True)
+    ):
+    """Main Menu System"""
+    if ctx.invoked_subcommand:
+        return
+
+    menu_text = Text.assemble(
+        "Main Menu\n",
+        ("1", "bold cyan"), " - Player Profile\n",
+        ("2", "bold cyan"), " - Player Transfer History\n",
+        ("3", "bold cyan"), " - Player Stats\n",
+        ("Q", "bold cyan"), " - Quit\n"
     )
 
-    selected = players[choice - 1]
+    while True:
+        try:
+            console.print(Panel(menu_text, title="Select an Option"))
+            key = readchar.readchar()
 
-    transfer_history = get_player_transfer_history(selected.url)
-    print(f"Player transfer history: {transfer_history}")
+            if key in ('1', '2', '3'):
+                name = typer.prompt("Enter player name")
+                if not name.strip():
+                    console.print("[yellow]Player name cannot be empty.[/yellow]")
+                    continue
+                if key == '1':
+                    player(name=name)
+                elif key == '2':
+                    transfer_history(name=name)
+                elif key == '3':
+                    stats(name=name)
+            elif key.lower() == 'q':
+                console.print("[bold yellow]Exiting...[/bold yellow]")
+                break
+            else:
+                console.print("[bold red]Invalid selection. Try again.[/bold red]")
 
-# CLI command to get player stats
+        except KeyboardInterrupt:
+            console.print("\n[bold yellow]Interrupted. Exiting...[/bold yellow]")
+            break
+        except Exception as e:
+            console.print(f"[bold red]Unexpected error: {e}[/bold red]")
 
 
 if __name__ == "__main__":
