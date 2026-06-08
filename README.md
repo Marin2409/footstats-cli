@@ -158,19 +158,13 @@ uv sync
 cp .env.example .env
 ```
 
-**5. Install the CLI locally**
-
-```bash
-uv pip install -e .
-```
-
-**Run directly without installing**
+**5. Run directly without installing**
 
 ```bash
 # With Python
 python -m src.cli.main [command] [argument]
 
-# With UV
+# With UV (Recommended)
 uv run python -m src.cli.main [command] [argument]
 ```
 
