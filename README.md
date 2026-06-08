@@ -1,65 +1,11 @@
-<!-- # Footstats-Scraper
-
-Manage Football Stats from the your own Terminal CLI.  
-
----
-
-## Web Scraping Sources 
-
-| Markdown    | Source              | What to expect | 
-|--------|----------------------|--------|
-| [Transfermarkt](/docs/transfermarkt.md) | [Link to Website](https://www.transfermarkt.com/) |Player Market Value, Transfers, Matches Played, Penalties, etc | 
-
-## Package Management
-This project uses [UV](https://github.com/astral-sh/uv) as the Python package manager and environment manager. UV is a fast, modern alternative to pip and virtualenv.
-
-**UV Environments:** The `root` directory is configured as a UV project with its own virtual environment and dependencies.
-
-#### UV Installation Steps
-```bash
-# Install UV (if not already installed)
-brew install uv  # macOS
-# or: curl -LsSf https://astral.sh/uv/install.sh | sh  # Linux/macOS
-# or: powershell -c "irm https://astral.sh/uv/install.ps1 | iex"  # Windows
-
-# Install base dependencies only
-uv sync
-
-# OR install everything (all optional dependencies)
-uv sync --all-extras
-```
-
-#### Activate the Virtual Environment
-
-**Using VSCODE Command Pallete**
-```bash
-# Get Python interpreter path for VSCode
-uv run which python
-
-# In VSCode:
-# 1. Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux)
-# 2. Type "Python: Select Interpreter"
-# 3. Paste the path from above
-# 4. Create a new terminal (Cmd+Shift+P -> "Create New Terminal with Profile")
-```
-
-**In terminal**
-Activate the new virtual environment so that any Python command you run or package you install uses it.
-
-```bash 
-source .venv/bin/activate
-```
-
-Every time you install a new package in that environment, activate the environment again.
-
-This makes sure that if you use a terminal (CLI) program installed by that package, you use the one from your virtual environment and not any other that could be installed globally, probably with a different version than what you need.
- -->
-
 # Footstats CLI
 
 > Football player stats, transfers, and market values — straight from your terminal.
-[![License: MIT](https://img.shields.io/github/license/Marin2409/footstats-scraper)](LICENSE)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Marin2409/footstats-cli/blob/main/LICENSE)
 ![UV](https://img.shields.io/badge/package%20manager-uv-purple?style=flat)
+![Python](https://img.shields.io/badge/Python-3.13%2B-blue.svg)
+
 ---
 
 ## Overview
@@ -89,75 +35,25 @@ Footstats is an open-source CLI tool that lets you search for any football playe
 
 ## Requirements
 
-- Python 3.13+
-- [UV](https://github.com/astral-sh/uv) package manager
+- [Python 3.13+](https://www.python.org/downloads/)
 
 ---
 
 ## Installation
 
-**1. Install UV**
+**With pip**
 
 ```bash
-# macOS
-brew install uv
-
-# Linux/macOS
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Windows
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+pip install footstats-cli
 ```
 
-**2. Clone the repository**
+**With uv (recommended)**
 
 ```bash
-git clone https://github.com/yourusername/footstats-scraper.git
-cd footstats-scraper
+uv tool install footstats-cli
 ```
 
-**3. Install dependencies**
-
-```bash
-uv sync
-```
-
-**4. Set up environment variables**
-
-```bash
-cp .env.example .env
-```
-
-**5. Activate the Virtual Environment**
-
-```bash
-# Get Python interpreter path for VSCode
-uv run which python
-```
-
-**Using VSCODE Command Pallete:**
-1.  Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux)
-2.  Type "Python: Select Interpreter"
-3.  Paste the path from above
-4.  Create a new terminal (Cmd+Shift+P -> "Create New Terminal with Profile")
-
-
-**In terminal**
-Activate the new virtual environment so that any Python command you run or package you install uses it.
-
-```bash 
-source .venv/bin/activate
-```
-
-Every time you install a new package in that environment, activate the environment again.
-
-This makes sure that if you use a terminal (CLI) program installed by that package, you use the one from your virtual environment and not any other that could be installed globally, probably with a different version than what you need.
-
-**5. Install the CLI**
-
-```bash
-uv pip install -e .
-```
+That's it — the `footstats` command is now available globally in your terminal.
 
 ---
 
@@ -188,7 +84,7 @@ footstats --version
 
 ## Configuration
 
-Copy `.env.example` to `.env` and adjust as needed:
+By default the tool works out of the box. To customize request behavior, create a `.env` file in your working directory:
 
 ```dotenv
 USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64)...
@@ -220,33 +116,85 @@ footstats-scraper/
 
 ## Development
 
-**Run with Python:**
-```python
-# Run directly with python without installing
-python -m src.cli.main [command] [argument]
-```
+**1. Clone the repository**
 
-**Run with UV:**
 ```bash
-# Run directly with uv without installing
-uv run python -m src.cli.main [command] [arguments]
+git clone https://github.com/Marin2409/footstats-cli.git
+cd footstats-cli
 ```
 
-| "scr"    | "cli"              | "main" | "command" | "argument |
-|--------|----------------------|--------|-----------|-----------|
-| Root | Parent Folder | File you wanna run | Action | Passing argument, Ex. "cristiano" |
+**2. Install UV**
+
+```bash
+# macOS
+brew install uv
+
+# Linux/macOS
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+**3. Install dependencies**
+
+```bash
+uv sync
+```
+
+**4. Set up environment variables**
+
+```bash
+cp .env.example .env
+```
+
+**5. Install the CLI locally**
+
+```bash
+uv pip install -e .
+```
+
+**Run directly without installing**
+
+```bash
+# With Python
+python -m src.cli.main [command] [argument]
+
+# With UV
+uv run python -m src.cli.main [command] [argument]
+```
+
+| Segment | Description |
+|--------|-------------|
+| `src` | Root source folder |
+| `cli` | CLI parent folder |
+| `main` | Entry point file |
+| `command` | Action (e.g. `player`, `stats`) |
+| `argument` | Player name (e.g. `"Cristiano"`) |
 
 **Run Tests**
+
 ```bash
-# Run tests
-pytest tests/test_providers.py ..
+pytest tests/test_providers.py
 ```
 
 ---
 
 ## Disclaimer
 
-This project is for educational purposes only. Data is sourced from [Transfermarkt](https://www.transfermarkt.com/). Please respect their [Terms of Service](https://www.transfermarkt.com/intern/anb) and avoid excessive requests. The `REQUEST_DELAY` setting in `.env` helps ensure responsible usage.
+This project is an independent open-source tool and is not affiliated with, endorsed by, or sponsored by [Transfermarkt](https://www.transfermarkt.com/) or any other data provider. Use it at your own risk and ensure compliance with their [Terms of Service](https://www.transfermarkt.com/intern/anb) and avoid excessive requests. The `REQUEST_DELAY` setting in `.env` helps ensure responsible usage.
+
+Users are solely responsible for ensuring that their use of this software complies with applicable laws, regulations, website terms of service, robots.txt policies, and rate-limiting requirements.
+
+The authors provide this software for educational and research purposes only and make no representations regarding the legality or appropriateness of its use in any particular jurisdiction or against any particular website.
+
+---
+
+## User Responsibility
+
+By using this software, you acknowledge that you are responsible for determining whether your use complies with applicable laws, regulations, and the terms of service of any websites you access.
+
+The authors are not responsible for how users choose to use this software.
 
 ---
 

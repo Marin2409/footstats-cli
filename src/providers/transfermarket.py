@@ -94,18 +94,19 @@ def get_player_profile(player_url: str) -> Player:
 
     # Extract player name if name tag is found
     if name_tag:
-
-        # Extract first and last names separately
         full_name = name_tag.text.strip()
-        parts = full_name.split(' ', 1)  # Split at the first space character
-        if len(parts) == 2:  # If there's only one space, it means we have a first and last name
-            first_name = parts[0].lower()
-            last_name = parts[1].lower()
-            name = f"{first_name} {last_name}"
-
-            # Removes any leading # and digits from the name (e.g., "#10lionelmessi" -> "Lionel Messi")
-            name = re.sub(r'^#\d+\s*', '', name)
-            name = name.title()
+        
+        # Remove leading shirt number (e.g. "#7Cristiano Ronaldo" -> "Cristiano Ronaldo")
+        full_name = re.sub(r'^#\d+\s*', '', full_name).strip()
+        
+        parts = full_name.split(' ', 1)
+        
+        if len(parts) == 2:
+            # Two or more words — title case both parts
+            name = f"{parts[0]} {parts[1]}".title()
+        elif len(parts) == 1 and parts[0]:
+            # Single name like "Pelé"
+            name = parts[0].strip().title()
 
     # Extract market value --------------------------------------------
     market_value = None
@@ -272,7 +273,7 @@ def get_player_profile(player_url: str) -> Player:
             class_="info-table__content info-table__content--bold"
         )
         if foot_sibling:
-            foot = foot_sibling.get_text(strip=True)
+            foot = foot_sibling.get_text(strip=True).title()
 
     # Create and return Player object ---------------------------------
     return Player(

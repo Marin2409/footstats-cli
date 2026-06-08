@@ -26,6 +26,7 @@ console = Console()
 def player(name: str):
     """Search for player and display player profile"""
     selected = select_player(name)
+    
     if not selected:
         return
     try:
