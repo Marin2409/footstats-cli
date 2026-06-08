@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "footstats-cli"
-version = "0.1.1"
+version = "0.1.2"
 description = "Football Stats Scraper - Footstats CLI"
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.13"
@@ -12,9 +12,6 @@ license = "MIT"
 dependencies = [
     "annotated-doc>=0.0.4",
     "beautifulsoup4>=4.14.3",
-    "numpy>=2.4.6",
-    "pandas>=3.0.3",
-    "pytest>=9.0.3",
     "python-dotenv>=1.2.2",
     "readchar>=4.2.2",
     "requests>=2.34.2",
@@ -32,6 +29,13 @@ classifiers = [
   "Programming Language :: Python",
   "License :: OSI Approved :: MIT License",
   "Natural Language :: English",
+]
+
+[project.optional-dependencies]
+dev = [
+    "numpy>=2.4.6",
+    "pandas>=3.0.3",
+    "pytest>=9.0.3",
 ]
 
 [project.urls]
