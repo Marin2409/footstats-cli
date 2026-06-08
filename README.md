@@ -57,11 +57,19 @@ That's it — the `footstats` command is now available globally in your terminal
 
 ## Upgrade to latest version
 ```bash
+# pip
+pip install footstats-cli --upgrade
+
+# uv
 uv tool upgrade footstats-cli
 ```
 
 ## Uninstall
 ```bash
+# pip
+pip uninstall footstats-cli
+
+# uv
 uv tool uninstall footstats-cli
 ```
 
