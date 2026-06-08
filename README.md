@@ -55,6 +55,16 @@ uv tool install footstats-cli
 
 That's it — the `footstats` command is now available globally in your terminal.
 
+## Upgrade to latest version
+```bash
+uv tool upgrade footstats-cli
+```
+
+## Uninstall
+```bash
+uv tool uninstall footstats-cli
+```
+
 ---
 
 ## Usage

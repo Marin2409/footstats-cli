@@ -2,6 +2,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 from rich import box
+from importlib.metadata import version
 
 console = Console()
 
@@ -116,5 +117,6 @@ def select_player(name: str):
 
 def version_callback(value: bool):
     if value:
-        console.print("[bold cyan]footstats v1.0.0[/bold cyan]")
+        v = version("footstats-cli")
+        console.print(f"[bold cyan]footstats v{v}[/bold cyan]")
         raise typer.Exit()
