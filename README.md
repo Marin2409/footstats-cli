@@ -3,6 +3,8 @@
 > Football player stats, transfers, and market values — straight from your terminal.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Marin2409/footstats-cli/blob/main/LICENSE)
+[![PyPI version](https://img.shields.io/pypi/v/footstats-cli.svg)](https://pypi.org/project/footstats-cli/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/footstats-cli)](https://pypi.org/project/footstats-cli/)
 ![UV](https://img.shields.io/badge/package%20manager-uv-purple?style=flat)
 ![Python](https://img.shields.io/badge/Python-3.13%2B-blue.svg)
 
@@ -72,6 +74,21 @@ pip uninstall footstats-cli
 # uv
 uv tool uninstall footstats-cli
 ```
+
+---
+
+## PyPI
+ 
+Footstats is published on the Python Package Index (PyPI) and can be installed with any Python package manager.
+ 
+**Package Page:**: [pypi.org/project/footstats-cli](https://pypi.org/project/footstats-cli/)
+ 
+| Detail | Info |
+|--------|------|
+| Latest version | ![PyPI version](https://img.shields.io/pypi/v/footstats-cli.svg) |
+| Python requires | 3.13+ |
+| License | MIT |
+| Monthly downloads | ![PyPI downloads](https://img.shields.io/pypi/dm/footstats-cli.svg) |
 
 ---
 
