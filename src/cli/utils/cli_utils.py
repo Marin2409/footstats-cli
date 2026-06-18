@@ -3,6 +3,7 @@ from rich.console import Console
 from rich.table import Table
 from rich import box
 from importlib.metadata import version
+from itertools import groupby
 
 console = Console()
 
@@ -94,6 +95,29 @@ def display_stats(stat_rows):
         )
 
     console.print(table)
+
+def display_matches(matches):
+    # Group by competition
+    sorted_matches = sorted(matches, key=lambda m: m.competition or "")
+
+    for competition, group in groupby(sorted_matches, key=lambda m: m.competition):
+        table = Table(box=box.ROUNDED, title=f"[bold]{competition}[/bold]")
+        table.add_column("Round",   style="bold cyan",  no_wrap=True)
+        table.add_column("Home",    style="white",       justify="right")
+        table.add_column("Score",   style="bold yellow", justify="center")
+        table.add_column("Away",    style="white")
+        table.add_column("Venue",   style="dim")
+
+        for m in group:
+            table.add_row(
+                m.round or "—",
+                m.home or "—",
+                m.score or "vs",
+                m.away or "—",
+                m.venue or "—",
+            )
+
+        console.print(table)
 
 def select_player(name: str):
     try:

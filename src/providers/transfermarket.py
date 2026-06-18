@@ -12,12 +12,12 @@ from src.utils.config import birthday_pattern
 from src.utils.config import search_url_template
 from src.utils.config import transfer_history_url_template
 from src.utils.config import player_stats_url_template
-from src.utils.config import base_url
+from src.utils.config import TFbase_url
 
 # Database Models
-from src.models.player_profile_db import Player
-from src.models.player_transfer_history_db import Transfer
-from src.models.player_stats_db import StatRow
+from src.models.players.player_profile_db import Player
+from src.models.players.player_transfer_history_db import Transfer
+from src.models.players.player_stats_db import StatRow
 
 # Utils
 from src.utils.request_to_soup import transfermarkt_request_to_soup
@@ -63,7 +63,7 @@ def get_search_results(name):
         if not player_name:
             continue
 
-        full_url = f"{base_url}{href}"
+        full_url = f"{TFbase_url}{href}"
 
         players.append(
             Player(

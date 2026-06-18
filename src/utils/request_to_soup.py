@@ -33,9 +33,9 @@ def transfermarkt_request_to_soup(url):
                 f"Request to {response.url} failed with status code {response.status_code}"
             )
         # UNCOMMENT FOR DEBUGGING
-        # else:
-        #     print(f"\nRequest to '{url}' successful.")
-        #     print("Status:", response.status_code, "\n")
+        else:
+            print(f"\nRequest to '{url}' successful.")
+            print("Status:", response.status_code, "\n")
         
         # Parse the content with BeautifulSoup
         soup = BeautifulSoup(response.content, 'html.parser')
